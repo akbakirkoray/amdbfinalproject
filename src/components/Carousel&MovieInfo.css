@@ -1,0 +1,158 @@
+/* Carousel */
+.CarouselMainFlex {
+    padding: 1vh 5vw 10vh 5vw;
+    background-color: black;
+}
+
+.CarouselFlex {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.carousel-control-prev-icon {
+    margin-right: 10vw;
+}
+
+.carousel-control-next-icon {
+    margin-left: 10vw;
+}
+
+/* Carousel */
+
+/* MovieInfo.js & Carousel */
+.backgroundMovieInfo {
+    background-color: black;
+    padding: 1rem 4rem 1rem 4rem;
+}
+
+.MoviePoster {
+    width: 20vw;
+    height: auto;
+    margin-left: 5vw;
+    margin-bottom: 5vh;
+    margin-top: 5vh;
+    border-radius: 2rem;
+}
+
+.InfoContent {
+    width: 50vw;
+    color: white;
+    background-color: rgba(66, 73, 73, 0.8);
+    border: 2px solid black;
+    border-radius: 2rem;
+    margin-right: 5vw;
+    margin-bottom: 5vh;
+    margin-top: 5vh;
+    padding: 1vh 1vw 1vh 1vw;
+}
+
+.MovieTitle {
+    font-size: 2rem;
+    font-weight: bold;
+    font-family: 'Mandali', sans-serif;
+}
+
+.ReleaseDate {
+    font-size: 1.5rem;
+    font-family: 'Mandali', sans-serif;
+}
+
+.Overview {
+    font-size: 1rem;
+    text-align: justify;
+    font-family: 'Mandali', sans-serif;
+}
+
+.Rating {
+    font-size: 1.5rem;
+    font-family: 'Mandali', sans-serif;
+}
+
+/* MovieInfo.js & Carousel */
+
+
+@media screen and (min-width: 320px) and (max-width: 767px) {
+
+    .CarouselFlex {
+        flex-direction: column;
+        align-content: center;
+        align-items: center;
+    }
+
+    /*MovieResultsInfo.js*/
+    .backgroundMovieInfo {
+        background-color: black;
+        padding-left: 5vw;
+        padding-right: 5vw;
+    }
+    .BackgroundPoster {
+        width: 90vw;
+    }
+    /*MovieResultsInfo.js*/
+
+    .MoviePoster {
+        width: auto;
+        height: 40vh;
+        margin: 1vh 1vw 1vh 1vw;
+    }
+
+    .InfoContent {
+        width: 80vw;
+        border-radius: 2rem;
+        margin-right: 1vw;
+        margin-bottom: 1vh;
+        margin-top: 1vh;
+        padding: 2vh 2vw 2vh 2vw;
+    }
+
+    .MovieTitle {
+        font-size: 1rem;
+    }
+
+    .ReleaseDate {
+        font-size: 1rem;
+    }
+
+    .Overview {
+        font-size: 0.8rem;
+    }
+
+    .Rating {
+        font-size: 1rem;
+    }
+
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+
+    .MoviePoster {
+        width: auto;
+        height: 40vh;
+        margin: 5vh 5vw 5vh 5vw;
+    }
+
+    .InfoContent {
+        width: 80vw;
+        border-radius: 2rem;
+        margin: 5vh 5vw 5vh 5vw;
+        padding: 2vh 2vw 2vh 2vw;
+    }
+
+    .MovieTitle {
+        font-size: 1.3rem;
+    }
+
+    .ReleaseDate {
+        font-size: 1rem;
+    }
+
+    .Overview {
+        font-size: 0.9rem;
+    }
+
+    .Rating {
+        font-size: 1rem;
+    }
+
+}
