@@ -1,0 +1,13 @@
+#ToggleButton {
+	border: none;
+	font-weight: bold;
+	font-size: 1rem;
+	}
+
+#ToggleButton:hover {
+	color: black;
+	}
+
+#TitleLink {
+	text-decoration: none;
+	}
