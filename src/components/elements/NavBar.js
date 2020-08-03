@@ -1,8 +1,8 @@
 import React, {useState, useEffect, useRef, memo} from "react";
 import {Link, useHistory} from "react-router-dom";
-import {connect} from "react-redux";
+import {useDispatch} from 'react-redux';
 import styled from 'styled-components';
-import {searchType, searchTerm, performSearch, resetSearch} from "../../redux";
+import {setSearchType, performSearch, resetSearch, setSearchTerm} from "../../redux";
 
 const NavBarMain = styled.div`
 display: flex;
@@ -134,7 +134,7 @@ display:none;
 width: 10vw;
 }`;
 
-const NavBar = memo((props) => {
+const NavBar = memo(() => {
 
   let history = useHistory();
 
@@ -142,13 +142,16 @@ const NavBar = memo((props) => {
   const [placeHolder, setPlaceHolder] = useState("Movies");
   const searchRef = useRef("");
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
+    setPlaceHolder("Movies");
     searchRef.current.focus();
-    console.log("searching"); // DELETE
+
     setTimeout(() => {
       if (searchValue && searchValue === searchRef.current.value) {
-        props.searchTerm(searchValue);
-        props.performSearch();
+        dispatch(setSearchTerm(searchValue));
+        dispatch(performSearch());
         history.push("/search");
         setSearchValue("");
       } else {
@@ -158,21 +161,33 @@ const NavBar = memo((props) => {
 
   }, [searchValue]);
 
+  function setMovieCategory() {
+    setPlaceHolder("Movies");
+    dispatch(setSearchType("movie"));
+  };
+
+  function setTvCategory() {
+    setPlaceHolder("TV");
+    dispatch(setSearchType("tv"));
+  };
+
+  function setPeopleCategory() {
+    setPlaceHolder("People");
+    dispatch(setSearchType("person"));
+  };
+
   return (
     <>
       <NavBarMain>
 
         <Link to="/">
           <AmdbLogo src="../images/amdbLogo.svg"
-                    alt="logo"
-                    onClick={() => {
-                      props.resetSearch();
-                      props.searchTerm("");
-                      setSearchValue("");
-                    }}/>
+                    alt="logo"/>
         </Link>
         <Link to="/" id="TitleLink">
-          <AmdbLogoText>AMDb</AmdbLogoText>
+          <AmdbLogoText>
+            AMDb
+          </AmdbLogoText>
         </Link>
 
         <SearchDiv>
@@ -188,22 +203,19 @@ const NavBar = memo((props) => {
           />
 
           <SearchCategoryDiv>
-            <SearchCategoryButton onClick={() => {
-              setPlaceHolder("Movies");
-              props.searchType("movie");
-            }}>Movies
+            <SearchCategoryButton
+              onClick={setMovieCategory}>
+              Movies
             </SearchCategoryButton>
 
-            <SearchCategoryButton onClick={() => {
-              setPlaceHolder("TV");
-              props.searchType("tv");
-            }}>TV
+            <SearchCategoryButton
+              onClick={setTvCategory}>
+              TV
             </SearchCategoryButton>
 
-            <SearchCategoryButton onClick={() => {
-              setPlaceHolder("People");
-              props.searchType("person");
-            }}>People
+            <SearchCategoryButton
+              onClick={setPeopleCategory}>
+              People
             </SearchCategoryButton>
           </SearchCategoryDiv>
 
@@ -218,22 +230,4 @@ const NavBar = memo((props) => {
   );
 });
 
-const mapStateToProps = state => {
-  return {
-    searchTerm: state.reducerUrl.searchTerm,
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    searchType: type => dispatch(searchType(type)),
-    searchTerm: term => dispatch(searchTerm(term)),
-    performSearch: () => dispatch(performSearch()),
-    resetSearch: () => dispatch(resetSearch())
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(NavBar);
+export default NavBar;

@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {connect} from "react-redux";
+import {useSelector, useDispatch} from 'react-redux';
 import {fetchPersonDetails, setLoader} from "../redux";
 import styled from 'styled-components';
 import {Link} from "react-router-dom";
@@ -84,6 +84,8 @@ width: 60vw;
 font-size: 1.2rem;
 text-align: justify;
 font-family: 'Mandali', sans-serif;
+display:flex;
+flex-direction: column;
 
 animation: fade-in-fwd 3s ease-in-out both;
 
@@ -105,6 +107,28 @@ font-size: 0.9rem;
 @media screen and (min-width: 768px) and (max-width: 1024px) {
 width: 52vw;
 font-size: 1rem;
+}`;
+
+const ExternalLinkDiv = styled.div`
+display:flex;
+justify-content: flex-end;
+
+@media screen and (min-width: 320px) and (max-width: 767px) {
+justify-content: center;
+}
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+justify-content: flex-end;
+}`;
+
+const ExternalLink = styled.img`
+width: 2.5vw;
+margin: 0.5rem 0.5rem;
+
+@media screen and (min-width: 320px) and (max-width: 767px) {
+width: 8vw;
+}
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+width: 4vw;
 }`;
 
 const OtherPhotosDiv = styled.div`
@@ -225,10 +249,18 @@ font-size: 0.8rem;
 
 const ActorActressPage = (props) => {
 
+  const personData = useSelector(state => state.reducerUrl.personDetails.personData,);
+  const personCredits = useSelector(state => state.reducerUrl.personDetails.personCredits);
+  const personImages = useSelector(state => state.reducerUrl.personDetails.personImages);
+  const personExternalIDs = useSelector(state => state.reducerUrl.personDetails.personExternalIDs);
+  const loading = useSelector(state => state.reducerUrl.loading);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    props.fetchPersonDetails(props.match.params.personId);
+    dispatch(fetchPersonDetails(props.match.params.personId));
     return () => {
-      props.setLoader();
+      dispatch(setLoader());
     };
   }, []);
 
@@ -236,31 +268,47 @@ const ActorActressPage = (props) => {
   return (
     <FullPage>
 
-      {props.loading ?
+      {loading ?
 
         <Spinner animation="border" role="status">
           <span className="sr-only">Loading...</span>
         </Spinner>
         :
         <div>
-          <Name>{props.personData.name}</Name>
+          <Name>{personData.name}</Name>
 
           <PhotoInfoDiv>
-            <Photo src={`https://image.tmdb.org/t/p/w500/${props.personData.profile_path}`}/>
+            <Photo src={`https://image.tmdb.org/t/p/w342/${personData.profile_path}`}/>
 
             <InfoDiv>
-              <p>{props.personData.biography}</p>
-              <p>{`Born : ${props.personData.birthday} in ${props.personData.place_of_birth}`}</p>
-              <p>{props.personData.deathday ? `Died : ${props.personData.deathday}` : null}</p>
+              <p>{personData.biography}</p>
+              <p>{`Born : ${personData.birthday} in ${personData.place_of_birth}`}</p>
+              <p>{personData.deathday ? `Died : ${personData.deathday}` : null}</p>
+
+              <ExternalLinkDiv>
+                {personExternalIDs.facebook_id ? <a href={`https://www.facebook.com/${personExternalIDs.facebook_id}/`} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink src="../images/facebook.svg" alt="facebook"/>
+                </a> : null}
+                {personExternalIDs.instagram_id ? <a href={`https://www.instagram.com/${personExternalIDs.instagram_id}/`} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink src="../images/instagram.svg" alt="instagram"/>
+                </a> : null}
+                {personExternalIDs.twitter_id ? <a href={`https://twitter.com/${personExternalIDs.twitter_id}/`} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink src="../images/twitter.svg" alt="twitter"/>
+                </a> : null}
+                {personExternalIDs.imdb_id ? <a href={`https://www.imdb.com/name/${personExternalIDs.imdb_id}/`} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink src="../images/imdb1.svg" alt="imdb"/>
+                </a> : null}
+              </ExternalLinkDiv>
             </InfoDiv>
+
           </PhotoInfoDiv>
 
-          {props.personImages.length > 1 ?
+          {personImages.length > 1 ?
             <OtherPhotosDiv>
-              {props.personImages.map((element, index) => (
-                element.file_path !== props.personData.file_path ?
+              {personImages.map((element, index) => (
+                element.file_path !== personData.file_path ?
                   <a href={`https://image.tmdb.org/t/p/original${element.file_path}`} target="_blank" key={index}>
-                    <OtherPhoto src={`https://image.tmdb.org/t/p/w185/${element.file_path}`}/>
+                    <OtherPhoto src={`https://image.tmdb.org/t/p/w154/${element.file_path}`}/>
                   </a>
                   : null
               ))}
@@ -268,9 +316,8 @@ const ActorActressPage = (props) => {
             : null}
 
           <CreditsOuterDiv>
-            {props.personCredits.sort((a, b) => {
+            {personCredits.sort((a, b) => {
               if (a.release_date < b.release_date) return +1;
-              //if (a.release_date == b.release_date) return 0;
               if (a.release_date > b.release_date) return -1;
             }).map((element, index) => (
               <CreditsInnerDiv key={index}>
@@ -291,24 +338,4 @@ const ActorActressPage = (props) => {
   );
 };
 
-const mapStateToProps = state => {
-  return {
-    personData: state.reducerUrl.personDetails.personData,
-    personCredits: state.reducerUrl.personDetails.personCredits,
-    personImages: state.reducerUrl.personDetails.personImages,
-    personExternalIDs: state.reducerUrl.personDetails.personExternalIDs,
-    loading: state.reducerUrl.loading
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchPersonDetails: id => dispatch(fetchPersonDetails(id)),
-    setLoader: () => dispatch(setLoader())
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ActorActressPage);
+export default ActorActressPage;

@@ -1,9 +1,8 @@
 import React, {memo} from "react";
-import {connect} from "react-redux";
+import {useSelector} from 'react-redux';
 import styled from 'styled-components';
 import NoImage from "../images/Noimage.svg";
 import {IMAGE_BASE_URL, POSTER_SIZE, BACKDROP_SIZE} from "../../endpointConstants.js";
-import {fetchMovieDetails, fetchTVDetails} from "../../redux";
 
 const BackgroundMovieInfo = styled.div`
 background-color: black;
@@ -273,7 +272,7 @@ width: 35vw;
 height:17vh;
 }`;
 
-const MovieInfo = memo((props) => {
+const MovieInfo = memo(() => {
 
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -281,19 +280,23 @@ const MovieInfo = memo((props) => {
     minimumFractionDigits: 0
   });
 
+  const movieTvDetailResults = useSelector(state => state.reducerUrl.movieTvDetailResults.dataObject);
+  const videos = useSelector(state => state.reducerUrl.movieTvDetailResults.videos);
+  const external_ids = useSelector(state => state.reducerUrl.movieTvDetailResults.external_ids);
+
   return (
     <BackgroundMovieInfo> {/* BLACK BACKGROUND */}
 
       <CarouselFlex style={{
-        backgroundImage: `url(${IMAGE_BASE_URL}${BACKDROP_SIZE}${props.movieTvDetailResults.backdrop_path})`,
+        backgroundImage: `url(${IMAGE_BASE_URL}${BACKDROP_SIZE}${movieTvDetailResults.backdrop_path})`,
         backgroundSize: "cover",
         borderRadius: "2rem",
         backgroundPosition: "center center"
       }}>
 
         <MoviePoster
-          src={props.movieTvDetailResults.poster_path
-            ? `${IMAGE_BASE_URL}${POSTER_SIZE}${props.movieTvDetailResults.poster_path}`
+          src={movieTvDetailResults.poster_path
+            ? `${IMAGE_BASE_URL}${POSTER_SIZE}${movieTvDetailResults.poster_path}`
             : NoImage}
           clickable={false}
         />
@@ -301,50 +304,50 @@ const MovieInfo = memo((props) => {
         <InfoContent>
 
           <MovieTitle>
-            {props.movieTvDetailResults.title
-              ? props.movieTvDetailResults.title
-              : props.movieTvDetailResults.name}
+            {movieTvDetailResults.title
+              ? movieTvDetailResults.title
+              : movieTvDetailResults.name}
           </MovieTitle>
 
-          <ReleaseDate>{props.movieTvDetailResults.release_date ?
-            `Release Date : ${props.movieTvDetailResults.release_date}`
-            : `First Air Date : ${props.movieTvDetailResults.first_air_date}`}
+          <ReleaseDate>{movieTvDetailResults.release_date ?
+            `Release Date : ${movieTvDetailResults.release_date}`
+            : `First Air Date : ${movieTvDetailResults.first_air_date}`}
           </ReleaseDate>
 
           <Overview>
-            {props.movieTvDetailResults.overview}
+            {movieTvDetailResults.overview}
           </Overview>
 
           <Rating>
-            Rating : {props.movieTvDetailResults.vote_average}
+            Rating : {movieTvDetailResults.vote_average}
           </Rating>
 
           <RuntimeBudgetRevenue>
-            {props.movieTvDetailResults.runtime ?
-              <Runtime>{`Runtime : ${Math.floor(props.movieTvDetailResults.runtime / 60)}h ${Math.floor(props.movieTvDetailResults.runtime % 60)}min`}</Runtime>
+            {movieTvDetailResults.runtime ?
+              <Runtime>{`Runtime : ${Math.floor(movieTvDetailResults.runtime / 60)}h ${Math.floor(movieTvDetailResults.runtime % 60)}min`}</Runtime>
               : null}
-            {props.movieTvDetailResults.episode_run_time ?
-              <Runtime>{`Episode runtime : ${props.movieTvDetailResults.episode_run_time}min`}</Runtime>
+            {movieTvDetailResults.episode_run_time ?
+              <Runtime>{`Episode runtime : ${movieTvDetailResults.episode_run_time}min`}</Runtime>
               : null}
-            {props.movieTvDetailResults.budget ?
-              <Budget>{`Budget : ${formatter.format(props.movieTvDetailResults.budget)}`}</Budget>
+            {movieTvDetailResults.budget ?
+              <Budget>{`Budget : ${formatter.format(movieTvDetailResults.budget)}`}</Budget>
               : null}
-            {props.movieTvDetailResults.revenue ?
-              <Revenue>{`Revenue : ${formatter.format(props.movieTvDetailResults.revenue)}`}</Revenue>
+            {movieTvDetailResults.revenue ?
+              <Revenue>{`Revenue : ${formatter.format(movieTvDetailResults.revenue)}`}</Revenue>
               : null}
           </RuntimeBudgetRevenue>
 
           <ExternalLinkDiv>
-            {props.external_ids.facebook_id ? <a href={`https://www.facebook.com/${props.external_ids.facebook_id}/`} target="_blank" rel="noopener noreferrer">
+            {external_ids.facebook_id ? <a href={`https://www.facebook.com/${external_ids.facebook_id}/`} target="_blank" rel="noopener noreferrer">
               <ExternalLink src="../images/facebook.svg" alt="facebook"/>
             </a> : null}
-            {props.external_ids.instagram_id ? <a href={`https://www.instagram.com/${props.external_ids.instagram_id}/`} target="_blank" rel="noopener noreferrer">
+            {external_ids.instagram_id ? <a href={`https://www.instagram.com/${external_ids.instagram_id}/`} target="_blank" rel="noopener noreferrer">
               <ExternalLink src="../images/instagram.svg" alt="instagram"/>
             </a> : null}
-            {props.external_ids.twitter_id ? <a href={`https://twitter.com/${props.external_ids.twitter_id}/`} target="_blank" rel="noopener noreferrer">
+            {external_ids.twitter_id ? <a href={`https://twitter.com/${external_ids.twitter_id}/`} target="_blank" rel="noopener noreferrer">
               <ExternalLink src="../images/twitter.svg" alt="twitter"/>
             </a> : null}
-            {props.external_ids.imdb_id ? <a href={`https://www.imdb.com/title/${props.external_ids.imdb_id}/`} target="_blank" rel="noopener noreferrer">
+            {external_ids.imdb_id ? <a href={`https://www.imdb.com/title/${external_ids.imdb_id}/`} target="_blank" rel="noopener noreferrer">
               <ExternalLink src="../images/imdb1.svg" alt="imdb"/>
             </a> : null}
           </ExternalLinkDiv>
@@ -354,7 +357,7 @@ const MovieInfo = memo((props) => {
       </CarouselFlex>
 
       <IframeDiv>
-        {props.videos.map((element, index) =>
+        {videos.map((element, index) =>
           <Iframe
             key={index}
             src={`https://www.youtube.com/embed/${element.key}/?autoplay=0&controls=1&disablekb=1&`}
@@ -369,23 +372,5 @@ const MovieInfo = memo((props) => {
   );
 });
 
-const mapStateToProps = state => {
-  return {
-    movieTvDetailResults: state.reducerUrl.movieTvDetailResults.dataObject,
-    videos: state.reducerUrl.movieTvDetailResults.videos,
-    external_ids: state.reducerUrl.movieTvDetailResults.external_ids,
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchTVDetails: id => dispatch(fetchTVDetails(id)),
-    fetchMovieDetails: id => dispatch(fetchMovieDetails(id)),
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MovieInfo);
+export default MovieInfo;
 

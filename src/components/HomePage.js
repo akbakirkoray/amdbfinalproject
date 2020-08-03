@@ -1,7 +1,7 @@
-import React, {useEffect, useState, useCallback} from "react";
-import {connect} from "react-redux";
+import React, {useEffect, useState, useCallback, useMemo} from "react";
 import styled from 'styled-components';
-import {fetchResults, increasePage, decreasePage, setLoader} from "../redux";
+import {fetchResults, increasePage, decreasePage, setLoader, resetSearch, setSearchTerm} from "../redux";
+import {useSelector, useDispatch} from 'react-redux';
 import MoviePoster from "./elements/MoviePoster";
 import MovieTvToggle from "./elements/MovieTvToggle";
 
@@ -41,40 +41,51 @@ font-size: 1rem;
 font-size: 1.5rem;
 }`;
 
-const HomePage = (props) => {
+const HomePage = () => {
 
   const [link, setLink] = useState("movie");
 
+  const fetchURL = useSelector(state => state.reducerUrl.fetchURL);
+  const page = useSelector(state => state.reducerUrl.page);
+  const totalPages = useSelector(state => state.reducerUrl.totalPages);
+  const searchTerm = useSelector(state => state.reducerUrl.searchTerm);
+  const popularType = useSelector(state => state.reducerUrl.popularType);
+
+  const dispatch = useDispatch();
+
   // FETCH ON MOUNT & PREV & NEXT
+  useMemo(() => {
+    dispatch(fetchResults(fetchURL));
+  }, [fetchURL, page]);
+
   useEffect(() => {
-    props.fetchResults(props.fetchURL);
-    setLink(props.popularType);
+    dispatch(setSearchTerm(""));
     return () => {
-      props.setLoader();
+      dispatch(setLoader());
     };
-  }, [props.popularType, props.page]);
+  }, []);
+
+  useMemo(() => {
+    setLink(popularType);
+  }, [popularType]);
   // FETCH ON MOUNT & PREV & NEXT
 
   // PREV & NEXT BUTTONS
-  const onIncrement = useCallback(() => handleIncrement(), [handleIncrement]);
-
-  function handleIncrement() {
-    if (props.page !== props.totalPages) {
-      props.increasePage();
+  const onIncrement = useCallback(() => {
+    if (page !== totalPages) {
+      dispatch(increasePage());
     } else {
       return null;
     }
-  };
+  }, []);
 
-  const onDecrement = useCallback(() => handleDecrement(), [handleDecrement]);
-
-  function handleDecrement() {
-    if (props.page > 1) {
-      props.decreasePage();
+  const onDecrement = useCallback(() => {
+    if (page > 1) {
+      dispatch(decreasePage());
     } else {
       return null;
     }
-  };
+  }, []);
   // PREV & NEXT BUTTONS
 
   return (
@@ -86,13 +97,13 @@ const HomePage = (props) => {
       {/* POPULAR MOVIE/TV LIST || MOVIE/TV SEARCH RESULT LIST */}
 
       {/*CONTROL BUTTONS*/}
-      {!props.searchTerm && (
+      {!searchTerm && (
 
         <PrevNextButtonMain>
           <PrevNextButton
             type="button"
             name="PrevButton"
-            disabled={props.page === 1}
+            disabled={page === 1}
             onClick={onDecrement}>
             Prev
           </PrevNextButton>
@@ -111,27 +122,4 @@ const HomePage = (props) => {
   );
 };
 
-const mapStateToProps = state => {
-  return {
-    fetchURL: state.reducerUrl.fetchURL,
-    page: state.reducerUrl.page,
-    totalPages: state.reducerUrl.totalPages,
-    popularResults: state.reducerUrl.popularResults,
-    searchTerm: state.reducerUrl.searchTerm,
-    popularType: state.reducerUrl.popularType,
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchResults: url => dispatch(fetchResults(url)),
-    increasePage: () => dispatch(increasePage()),
-    decreasePage: () => dispatch(decreasePage()),
-    setLoader: () => dispatch(setLoader())
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(HomePage);
+export default HomePage;

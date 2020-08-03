@@ -1,10 +1,10 @@
-import React, {useState, useEffect, memo} from "react";
+import React, {useState, useEffect, memo, useCallback} from "react";
 import styled from 'styled-components';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../style.css";
-import {connect} from "react-redux";
+import {useDispatch} from 'react-redux';
 import {switchToTv, resetSearch} from "../../redux";
 
 const ButtonGroupDiv = styled.div`
@@ -13,7 +13,7 @@ justify-content: center;
 margin-bottom: 1rem;
 `;
 
-const MovieTvToggle = memo((props) => {
+const MovieTvToggle = memo(() => {
 
   const [radioValue, setRadioValue] = useState("movie");
 
@@ -22,13 +22,18 @@ const MovieTvToggle = memo((props) => {
     {name: "Popular TV Shows", value: "tv"},
   ];
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (radioValue === "tv") {
-      props.switchToTv();
+      dispatch(switchToTv());
     } else if (radioValue === "movie") {
-      props.resetSearch();
+      dispatch(resetSearch());
     }
   }, [radioValue]);
+
+  const handleChange = useCallback(e =>
+    setRadioValue(e.currentTarget.value), []);
 
   return (
     <>
@@ -43,7 +48,7 @@ const MovieTvToggle = memo((props) => {
               name="radio"
               value={radio.value}
               checked={radioValue === radio.value}
-              onChange={(e) => setRadioValue(e.currentTarget.value)}>
+              onChange={handleChange}>
               {radio.name}
             </ToggleButton>
           ))}
@@ -53,18 +58,4 @@ const MovieTvToggle = memo((props) => {
   );
 });
 
-const mapStateToProps = state => {
-  return {};
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    switchToTv: () => dispatch(switchToTv()),
-    resetSearch: () => dispatch(resetSearch())
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MovieTvToggle);
+export default MovieTvToggle;

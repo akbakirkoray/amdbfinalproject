@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import {connect} from "react-redux";
+import React, {useState, useEffect, useMemo} from "react";
+import {useSelector, useDispatch} from 'react-redux';
 import styled from 'styled-components';
 import {fetchResults, setLoader} from "../redux";
 import MoviePoster from "./elements/MoviePoster";
@@ -33,23 +33,36 @@ font-size: 2rem;
 padding: 0;
 }`;
 
-const SearchResultsPage = (props) => {
+const SearchResultsPage = () => {
 
   const [link, setLink] = useState("");
 
+  const fetchURL = useSelector(state => state.reducerUrl.fetchURL);
+  const popularResults = useSelector(state => state.reducerUrl.popularResults);
+  const searchType = useSelector(state => state.reducerUrl.searchType);
+  const loading = useSelector(state => state.reducerUrl.loading);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    props.fetchResults(props.fetchURL);
-    setLink(props.searchType);
     return () => {
-      props.setLoader();
+      dispatch(setLoader());
     };
-  }, [props.fetchURL, props.searchType]);
+  }, []);
+
+  useMemo(() => {
+    dispatch(fetchResults(fetchURL));
+  }, [fetchURL]);
+
+  useMemo(() => {
+    setLink(searchType);
+  }, [searchType]);
 
   return (
     <FullPage>
       <SearchResultText>Search Results</SearchResultText>
 
-      {props.loading
+      {loading
         ?
         <Spinner animation="border" role="status">
           <span className="sr-only">Loading...</span>
@@ -57,8 +70,9 @@ const SearchResultsPage = (props) => {
         :
         <div>
           <MoviePoster link={link}/>
-          {props.searchType == "person" ?
-            <ActorPoster actorData={props.popularResults}/>
+
+          {searchType === "person" ?
+            <ActorPoster actorData={popularResults}/>
             : null}
         </div>
       }
@@ -66,24 +80,4 @@ const SearchResultsPage = (props) => {
   );
 };
 
-const mapStateToProps = state => {
-  return {
-    fetchURL: state.reducerUrl.fetchURL,
-    popularResults: state.reducerUrl.popularResults,
-    popularType: state.reducerUrl.popularType,
-    searchType: state.reducerUrl.searchType,
-    loading: state.reducerUrl.loading
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchResults: url => dispatch(fetchResults(url)),
-    setLoader: () => dispatch(setLoader())
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SearchResultsPage);
+export default SearchResultsPage;

@@ -1,9 +1,9 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import {connect} from "react-redux";
+import {useSelector} from 'react-redux';
 import styled from 'styled-components';
 import Spinner from 'react-bootstrap/Spinner';
-import {IMAGE_BASE_URL, POSTER_SIZE} from "../../endpointConstants";
+import {IMAGE_BASE_URL} from "../../endpointConstants";
 
 const FlexMovieList = styled.div`
 display: flex;
@@ -41,7 +41,6 @@ animation: fade-in-fwd 2s ease-in-out both;
   }
 }
 
-
 @media screen and (min-width: 320px) and (max-width: 767px) {
 width: 40vw;
 border: 0.2rem solid gray;
@@ -53,43 +52,29 @@ border: 0.2rem solid gray;
 
 const MoviePoster = (props) => {
 
+  const popularResults = useSelector(state => state.reducerUrl.popularResults);
+  const loading = useSelector(state => state.reducerUrl.loading);
+
   return (
     <FlexMovieList>
 
-      {props.loading ?
+      {loading ?
 
         <Spinner animation="border" role="status">
           <span className="sr-only">Loading...</span>
         </Spinner>
 
-        : props.searchType === "movie" || props.searchType === "tv" ?
-
-          props.popularResults.map((movie, index) => (
-            <Link to={`/${props.link}/${movie.id}`} key={index}>
-              {movie.poster_path ? <FlexMoviePoster src={`${IMAGE_BASE_URL}${POSTER_SIZE}${movie.poster_path}`} alt="Poster"/> : null}
-            </Link>))
-
-          : null}
+        :
+        popularResults.map((movie, index) => (
+          <Link to={`/${props.link}/${movie.id}`} key={index}>
+            {movie.poster_path ? <FlexMoviePoster src={`${IMAGE_BASE_URL}w342${movie.poster_path}`} alt="Poster"/> : null}
+          </Link>))
+      }
 
     </FlexMovieList>
   );
 };
 
-const mapStateToProps = state => {
-  return {
-    popularResults: state.reducerUrl.popularResults,
-    searchType: state.reducerUrl.searchType,
-    loading: state.reducerUrl.loading
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {};
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MoviePoster);
+export default MoviePoster;
 
 

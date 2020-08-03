@@ -45,14 +45,14 @@ export const decreasePage = () => {
   };
 };
 
-export const searchType = (type) => {
+export const setSearchType = (type) => {
   return {
     type: SET_SEARCH_TYPE,
     payload: type
   };
 };
 
-export const searchTerm = (term) => {
+export const setSearchTerm = (term) => {
   return {
     type: SET_SEARCH_TERM,
     payload: term

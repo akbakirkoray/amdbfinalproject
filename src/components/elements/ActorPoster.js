@@ -1,9 +1,8 @@
 import React from "react";
-import {connect} from "react-redux";
 import {Link} from "react-router-dom";
 import styled from 'styled-components';
 import NoImage from "../images/BlankAvatar.png";
-import {IMAGE_BASE_URL, POSTER_SIZE} from "../../endpointConstants.js";
+import {IMAGE_BASE_URL} from "../../endpointConstants.js";
 
 const FlexActorList = styled.div`
 display: flex;
@@ -112,7 +111,7 @@ const ActorPoster = (props) => {
               <ActorPosterImg
                 src={
                   actor.profile_path
-                    ? `${IMAGE_BASE_URL}${POSTER_SIZE}${actor.profile_path}`
+                    ? `${IMAGE_BASE_URL}w342${actor.profile_path}`
                     : NoImage
                 }
                 alt="ActorImage"
@@ -128,17 +127,6 @@ const ActorPoster = (props) => {
   );
 };
 
-const mapStateToProps = state => {
-  return {};
-};
-
-const mapDispatchToProps = dispatch => {
-  return {};
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ActorPoster);
+export default ActorPoster;
 
 
